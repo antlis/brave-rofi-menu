@@ -2,6 +2,7 @@
   "name": "puppetier",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -9,6 +10,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "puppeteer": "^23.11.1"
+    "node-fetch": "^3.3.2",
+    "puppeteer": "^23.11.1",
+    "tmp": "^0.2.3"
   }
 }
