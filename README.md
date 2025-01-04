@@ -1,6 +1,6 @@
 # Puppetier brave tabs
 
-Opens rofi window that allows to switch brave brwoser tabs. For i3 wm.
+Opens [rofi](https://github.com/davatorium/rofi) window that allows to switch brave browser tabs. For [i3wm](https://github.com/i3/i3).
 
 Requires brave in debug mode:
 
