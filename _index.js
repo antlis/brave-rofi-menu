@@ -1,3 +1,6 @@
+// TODO: Consider removing
+// Deprecated
+// Puppetter hangs randomgly
 import puppeteer from 'puppeteer';
 
 (async () => {
