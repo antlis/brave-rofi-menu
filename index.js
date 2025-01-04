@@ -1,6 +1,45 @@
 import CDP from 'chrome-remote-interface';
 import { execSync } from 'child_process';
 
+async function findAndFocusBraveWindow(tabTitle) {
+  try {
+    // Get a list of all i3 windows
+    const i3Windows = JSON.parse(execSync('i3-msg -t get_tree').toString());
+
+    // Recursively find Brave windows
+    const findBraveWindows = (node, braveWindows = []) => {
+      if (node.nodes) {
+        node.nodes.forEach((child) => findBraveWindows(child, braveWindows));
+      }
+      if (node.window && node.name && node.name.includes('Brave')) {
+        braveWindows.push({ id: node.window, name: node.name });
+      }
+      return braveWindows;
+    };
+
+    const braveWindows = findBraveWindows(i3Windows);
+
+    if (braveWindows.length > 0) {
+      // Find the Brave window matching the tab title
+      const targetWindow = braveWindows.find((win) => win.name.includes(tabTitle));
+
+      if (targetWindow) {
+        execSync(`i3-msg [id="${targetWindow.id}"] focus`);
+        console.log(`Focused on Brave window: ${targetWindow.name}`);
+      } else {
+        console.warn(
+          'No specific window matched the tab title. Focusing the first Brave window.'
+        );
+        execSync(`i3-msg [id="${braveWindows[0].id}"] focus`);
+      }
+    } else {
+      throw new Error('No Brave windows found in i3.');
+    }
+  } catch (err) {
+    console.error('Error focusing Brave window:', err.message);
+  }
+}
+
 (async () => {
   try {
     console.log('Connecting to Brave...');
@@ -57,6 +96,9 @@ import { execSync } from 'child_process';
         // Activate the selected page
         await Target.activateTarget({ targetId: selectedPage.id });
         console.log(`Switched to: ${selectedPage.title}`);
+
+        // Focus on the Brave browser window using the tab title
+        await findAndFocusBraveWindow(selectedPage.title);
       }
     }
 
