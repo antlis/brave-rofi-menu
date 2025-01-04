@@ -74,7 +74,7 @@ async function findAndFocusBraveWindow(tabTitle) {
       .join('\n');
 
     const selected = execSync(
-      `echo -e "${pageOptions}\n- New Tab\n- Exit" | rofi -dmenu -i -p "Select Tab"`
+      `echo -e "${pageOptions}\n- New Tab\n- Exit" | rofi -dmenu -i -p "Select Tab" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
     )
       .toString()
       .trim();
