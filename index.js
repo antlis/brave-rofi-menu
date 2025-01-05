@@ -68,24 +68,42 @@ async function findAndFocusBraveWindow(tabTitle) {
       console.log(`${index + 1}. ${page.title || 'Untitled'} - ${page.url}`);
     });
 
-    // Display options in rofi
+    // Display options in rofi (Move 'Search (Brave)' to the top)
     const pageOptions = pages
       .map((page, index) => `${index + 1}. ${page.title || 'Untitled'} - ${page.url}`)
       .join('\n');
 
     const selected = execSync(
-      `echo -e "${pageOptions}\n- New Tab\n- Close Tab\n- Exit" | rofi -dmenu -i -p "Select Tab" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
+      `echo -e "Search (Brave)\n${pageOptions}\n- New Tab\n- Close Tab\n- Exit" | rofi -dmenu -i -p "Select Tab" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
     )
       .toString()
       .trim();
 
-    if (selected === '- New Tab') {
+    if (selected === 'Search (Brave)') {
+      const searchQuery = execSync(
+        `rofi -dmenu -p "Enter search query:" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
+      )
+        .toString()
+        .trim();
+
+      if (searchQuery) {
+        console.log(`Searching for: ${searchQuery}`);
+        const { Target } = client;
+        const searchUrl = `https://search.brave.com/search?q=${encodeURIComponent(searchQuery)}`;
+        const newTarget = await Target.createTarget({ url: searchUrl });
+        console.log('Opened search result in new tab:', newTarget);
+
+        // Focus on the Brave browser window
+        await findAndFocusBraveWindow(searchQuery);
+      } else {
+        console.log('Search query is empty. No action taken.');
+      }
+    } else if (selected === '- New Tab') {
       console.log('Opening new tab...');
       const { Target } = client;
       const newTarget = await Target.createTarget({ url: 'brave://newtab' });
       console.log('New tab opened:', newTarget);
     } else if (selected === '- Close Tab') {
-      // Prompt the user to select a tab to close
       const tabToClose = execSync(
         `echo -e "${pageOptions}" | rofi -dmenu -i -p "Select Tab to Close" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
       )
@@ -97,8 +115,6 @@ async function findAndFocusBraveWindow(tabTitle) {
         if (!isNaN(selectedIndex)) {
           const selectedPage = pages[selectedIndex];
           const { Target } = client;
-
-          // Close the selected tab
           await Target.closeTarget({ targetId: selectedPage.id });
           console.log(`Closed tab: ${selectedPage.title}`);
         }
@@ -113,12 +129,8 @@ async function findAndFocusBraveWindow(tabTitle) {
         console.log(`Switching to tab ${selectedIndex + 1}...`);
         const selectedPage = pages[selectedIndex];
         const { Target } = client;
-
-        // Activate the selected page
         await Target.activateTarget({ targetId: selectedPage.id });
         console.log(`Switched to: ${selectedPage.title}`);
-
-        // Focus on the Brave browser window using the tab title
         await findAndFocusBraveWindow(selectedPage.title);
       }
     }
