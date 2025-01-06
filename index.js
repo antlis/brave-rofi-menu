@@ -108,22 +108,25 @@ async function findAndFocusBraveWindow(tabTitle) {
       const newTarget = await Target.createTarget({ url: 'brave://newtab' });
       console.log('New tab opened:', newTarget);
     } else if (selected === '- Close Tab') {
-      const tabToClose = execSync(
-        `echo -e "${pageOptions}" | rofi -dmenu -i -p "Select Tab to Close" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
+      const tabsToClose = execSync(
+        `echo -e "${pageOptions}" | rofi -dmenu -i -p "Select Tabs to Close" -multi-select -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
       )
         .toString()
-        .trim();
+        .trim()
+        .split('\n');
 
-      if (tabToClose) {
-        const selectedIndex = parseInt(tabToClose.split('.')[0]) - 1;
-        if (!isNaN(selectedIndex)) {
-          const selectedPage = pages[selectedIndex];
-          const { Target } = client;
-          await Target.closeTarget({ targetId: selectedPage.id });
-          console.log(`Closed tab: ${selectedPage.title}`);
+      if (tabsToClose.length > 0) {
+        const { Target } = client;
+        for (const tab of tabsToClose) {
+          const selectedIndex = parseInt(tab.split('.')[0]) - 1;
+          if (!isNaN(selectedIndex)) {
+            const selectedPage = pages[selectedIndex];
+            await Target.closeTarget({ targetId: selectedPage.id });
+            console.log(`Closed tab: ${selectedPage.title}`);
+          }
         }
       } else {
-        console.log('No tab selected to close.');
+        console.log('No tabs selected to close.');
       }
     } else if (selected === '- Exit' || !selected) {
       console.log('Exiting...');
