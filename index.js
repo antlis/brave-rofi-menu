@@ -68,13 +68,13 @@ async function findAndFocusBraveWindow(tabTitle) {
       console.log(`${index + 1}. ${page.title || 'Untitled'} - ${page.url}`);
     });
 
-    // Display options in rofi (Move 'Search (Brave)' to the top)
+    // Display options in rofi with separators
     const pageOptions = pages
       .map((page, index) => `${index + 1}. ${page.title || 'Untitled'} - ${page.url}`)
       .join('\n');
 
     const selected = execSync(
-      `echo -e "Search (Brave)\n${pageOptions}\n- New Tab\n- Close Tab\n- Exit" | rofi -dmenu -i -p "Select Tab" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
+      `echo -e "Search (Brave)\n────\n${pageOptions}\n────\n- Bookmarks\n- New Tab\n- Close Tab\n- Exit" | rofi -dmenu -i -p "Select Tab" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
     )
       .toString()
       .trim();
@@ -98,6 +98,10 @@ async function findAndFocusBraveWindow(tabTitle) {
       } else {
         console.log('Search query is empty. No action taken.');
       }
+    } else if (selected === '- Bookmarks') {
+      console.log('Launching bookmarks script...');
+      execSync('~/bin/rofi/rofi-bookmarks-brave');
+      console.log('Bookmarks script launched.');
     } else if (selected === '- New Tab') {
       console.log('Opening new tab...');
       const { Target } = client;
