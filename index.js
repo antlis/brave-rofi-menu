@@ -2,14 +2,17 @@ import CDP from 'chrome-remote-interface';
 import { execSync } from 'child_process';
 
 async function findAndFocusBraveWindow(tabTitle) {
-  try {
+try {
+console.log('Searching for Brave windows...');
     // Get a list of all i3 windows
     const i3Windows = JSON.parse(execSync('i3-msg -t get_tree').toString());
 
     // Recursively find Brave windows
     const findBraveWindows = (node, braveWindows = []) => {
       if (node.nodes) {
-        node.nodes.forEach((child) => findBraveWindows(child, braveWindows));
+        for (const child of node.nodes) {
+        findBraveWindows(child, braveWindows);
+        }
       }
       if (node.window && node.name && node.name.includes('Brave')) {
         braveWindows.push({ id: node.window, name: node.name });
@@ -26,17 +29,19 @@ async function findAndFocusBraveWindow(tabTitle) {
       if (targetWindow) {
         execSync(`i3-msg [id="${targetWindow.id}"] focus`);
         console.log(`Focused on Brave window: ${targetWindow.name}`);
-      } else {
-        console.warn(
-          'No specific window matched the tab title. Focusing the first Brave window.'
-        );
+    } else {
+        console.warn(`Tab title "${tabTitle}" not found. Focusing the first Brave window.`);
         execSync(`i3-msg [id="${braveWindows[0].id}"] focus`);
       }
     } else {
       throw new Error('No Brave windows found in i3.');
     }
   } catch (err) {
-    console.error('Error focusing Brave window:', err.message);
+    if (err instanceof SyntaxError) {
+        console.error('JSON parse error while fetching i3 windows:', err.message);
+    } else {
+        console.error('Unexpected error focusing Brave window:', err.message);
+    }
   }
 }
 
@@ -65,7 +70,7 @@ async function findAndFocusBraveWindow(tabTitle) {
 
     console.log(`Found ${pages.length} page(s):`);
     pages.forEach((page, index) => {
-      console.log(`${index + 1}. ${page.title || 'Untitled'} - ${page.url}`);
+    console.log(`  ${index + 1}. ${page.title || 'Untitled'} - ${page.url}`);
     });
 
     // Display options in rofi with separators
@@ -74,7 +79,7 @@ async function findAndFocusBraveWindow(tabTitle) {
       .join('\n');
 
     const selected = execSync(
-      `echo -e "Search (Brave)\n────\n${pageOptions}\n────\n- Bookmarks\n- New Tab\n- Close Tab\n- Exit" | rofi -dmenu -i -p "Select Tab" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
+      `echo -e "Search (Brave)\n────\n${pageOptions}\n────\n- Bookmarks\n- New Tab\n- Close Tab\n- Search in incognito\n- Exit" | rofi -dmenu -i -p "Select Tab" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
     )
       .toString()
       .trim();
@@ -128,6 +133,10 @@ async function findAndFocusBraveWindow(tabTitle) {
       } else {
         console.log('No tabs selected to close.');
       }
+    } else if (selected === '- Search in incognito') {
+      console.log('Launching incognito search script...');
+      execSync('~/bin/rofi/rofi-brave-debug-incognito');
+      console.log('Incognito search script launched.');
     } else if (selected === '- Exit' || !selected) {
       console.log('Exiting...');
     } else {
@@ -142,6 +151,7 @@ async function findAndFocusBraveWindow(tabTitle) {
       }
     }
 
+    await client.close();
     console.log('Disconnected from Brave.');
   } catch (err) {
     console.error('Error:', err.message);
