@@ -25,6 +25,7 @@ A powerful tool to switch Brave browser tabs using **i3** and **rofi**. This scr
 
 - **Node.js**: Ensure Node.js is installed on your system. Download it from [nodejs.org](https://nodejs.org/).
 - **Brave Browser**: This tool is designed for Brave. Install it from [brave.com](https://brave.com/).
+
 Run brave in debug mode `brave --remote-debugging-port=9222`
 - **rofi**: Install the menu utility:
   ```bash
