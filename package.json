@@ -1,18 +1,28 @@
 {
-  "name": "puppetier",
+  "name": "brave-rofi-menu",
   "version": "1.0.0",
-  "main": "index.js",
   "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "main": "src/index.js",
+  "bin": {
+    "brave-tab-switcher": "./bin/brave-rofi-menu"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "author": "antlis",
+  "license": "MIT",
+  "description": "A tool to switch Brave browser tabs using i3 and rofi.",
   "dependencies": {
-    "chrome-remote-interface": "^0.33.2",
-    "node-fetch": "^3.3.2",
-    "puppeteer": "^23.11.1",
-    "tmp": "^0.2.3"
-  }
+    "chrome-remote-interface": "^0.33.2"
+  },
+  "keywords": [
+    "brave",
+    "browser",
+    "tabs",
+    "i3",
+    "rofi",
+    "productivity",
+    "automation",
+    "chrome-remote-interface"
+  ]
 }

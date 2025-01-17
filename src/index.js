@@ -1,9 +1,12 @@
+import { createRequire } from 'module'; // Import createRequire for compatibility
+const require = createRequire(import.meta.url); // Create a require function
+
 import CDP from 'chrome-remote-interface';
 import { execSync } from 'child_process';
 
 async function findAndFocusBraveWindow(tabTitle) {
-try {
-console.log('Searching for Brave windows...');
+  try {
+    console.log('Searching for Brave windows...');
     // Get a list of all i3 windows
     const i3Windows = JSON.parse(execSync('i3-msg -t get_tree').toString());
 
@@ -11,7 +14,7 @@ console.log('Searching for Brave windows...');
     const findBraveWindows = (node, braveWindows = []) => {
       if (node.nodes) {
         for (const child of node.nodes) {
-        findBraveWindows(child, braveWindows);
+          findBraveWindows(child, braveWindows);
         }
       }
       if (node.window && node.name && node.name.includes('Brave')) {
@@ -29,7 +32,7 @@ console.log('Searching for Brave windows...');
       if (targetWindow) {
         execSync(`i3-msg [id="${targetWindow.id}"] focus`);
         console.log(`Focused on Brave window: ${targetWindow.name}`);
-    } else {
+      } else {
         console.warn(`Tab title "${tabTitle}" not found. Focusing the first Brave window.`);
         execSync(`i3-msg [id="${braveWindows[0].id}"] focus`);
       }
@@ -38,14 +41,14 @@ console.log('Searching for Brave windows...');
     }
   } catch (err) {
     if (err instanceof SyntaxError) {
-        console.error('JSON parse error while fetching i3 windows:', err.message);
+      console.error('JSON parse error while fetching i3 windows:', err.message);
     } else {
-        console.error('Unexpected error focusing Brave window:', err.message);
+      console.error('Unexpected error focusing Brave window:', err.message);
     }
   }
 }
 
-(async () => {
+export async function braveTabSwitcher() {
   try {
     console.log('Connecting to Brave...');
     const client = await CDP({
@@ -70,7 +73,7 @@ console.log('Searching for Brave windows...');
 
     console.log(`Found ${pages.length} page(s):`);
     pages.forEach((page, index) => {
-    console.log(`  ${index + 1}. ${page.title || 'Untitled'} - ${page.url}`);
+      console.log(`  ${index + 1}. ${page.title || 'Untitled'} - ${page.url}`);
     });
 
     // Display options in rofi with separators
@@ -156,4 +159,9 @@ console.log('Searching for Brave windows...');
   } catch (err) {
     console.error('Error:', err.message);
   }
-})();
+};
+
+// Check if the module is being run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  braveTabSwitcher();
+}
