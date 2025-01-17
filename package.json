@@ -3,6 +3,10 @@
   "version": "1.0.2",
   "type": "module",
   "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antlis/brave-rofi-menu"
+  },
   "bin": {
     "brave-rofi-menu": "./bin/brave-rofi-menu"
   },
