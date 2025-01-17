@@ -48,7 +48,7 @@ async function findAndFocusBraveWindow(tabTitle) {
   }
 }
 
-export async function braveTabSwitcher() {
+export async function braveRofiMenu() {
   try {
     console.log('Connecting to Brave...');
     const client = await CDP({
@@ -163,5 +163,5 @@ export async function braveTabSwitcher() {
 
 // Check if the module is being run directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  braveTabSwitcher();
+  braveRofiMenu();
 }

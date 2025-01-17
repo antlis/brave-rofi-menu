@@ -4,7 +4,7 @@
   "type": "module",
   "main": "src/index.js",
   "bin": {
-    "brave-tab-switcher": "./bin/brave-rofi-menu"
+    "brave-rofi-menu": "./bin/brave-rofi-menu"
   },
   "scripts": {
     "start": "node src/index.js"
