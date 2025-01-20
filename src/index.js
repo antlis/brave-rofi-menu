@@ -82,7 +82,7 @@ export async function braveRofiMenu() {
       .join('\n');
 
     const selected = execSync(
-      `echo -e "Search (Brave)\n────\n${pageOptions}\n────\n- Bookmarks\n- New Tab\n- Close Tab\n- Search in incognito\n- Exit" | rofi -dmenu -i -p "Select Tab" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
+      `echo -e "Search (Brave)\n────\n${pageOptions}\n────\n- Bookmarks\n- Bookmarks incognito\n- New Tab\n- Close Tab\n- Search in incognito\n- Exit" | rofi -dmenu -i -p "Select Tab" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
     )
       .toString()
       .trim();
@@ -110,6 +110,10 @@ export async function braveRofiMenu() {
       console.log('Launching bookmarks script...');
       execSync('~/bin/rofi/rofi-bookmarks-brave');
       console.log('Bookmarks script launched.');
+    } else if (selected === '- Bookmarks incognito') {
+      console.log('Launching incognito bookmarks script...');
+      execSync('~/bin/rofi/rofi-bookmarks-brave-incognito');
+      console.log('Incognito bookmarks script launched.');
     } else if (selected === '- New Tab') {
       console.log('Opening new tab...');
       const { Target } = client;
