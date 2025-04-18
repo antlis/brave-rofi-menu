@@ -76,17 +76,21 @@ export async function braveRofiMenu() {
       console.log(`  ${index + 1}. ${page.title || 'Untitled'} - ${page.url}`);
     });
 
-    // Display options in rofi with separators
+    // Display options in rofi with separators and tabs counter
     const pageOptions = pages
       .map((page, index) => `${index + 1}. ${page.title || 'Untitled'} - ${page.url}`)
       .join('\n');
 
+    // Add tabs counter to the menu header
+    const menuHeader = `Tabs: ${pages.length}\n────\nSearch (Brave)\n────\n${pageOptions}\n────\n- Bookmarks\n- Bookmarks incognito\n- New Tab\n- Close Tab\n- Search in incognito\n- Exit`;
+
     const selected = execSync(
-      `echo -e "Search (Brave)\n────\n${pageOptions}\n────\n- Bookmarks\n- Bookmarks incognito\n- New Tab\n- Close Tab\n- Search in incognito\n- Exit" | rofi -dmenu -i -p "Select Tab" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
+      `echo -e "${menuHeader}" | rofi -dmenu -i -p "Select Tab" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
     )
       .toString()
       .trim();
 
+    // Rest of your existing code remains the same...
     if (selected === 'Search (Brave)') {
       const searchQuery = execSync(
         `rofi -dmenu -p "Enter search query:" -theme-str 'window { fullscreen: true; } mainbox { padding: 2%; }'`
